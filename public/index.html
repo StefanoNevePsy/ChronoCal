@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f6f0e6" />
+    <title>ChronoCal · Il tempo, a conti fatti</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./">ChronoCal<span>un taccuino delle ore</span></a
+      ><label class="theme"
+        >Aspetto<select id="theme">
+          <option value="auto">Sistema</option>
+          <option value="light">Carta</option>
+          <option value="dark">Inchiostro</option>
+        </select></label
+      >
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <p class="eyebrow">Google Calendar · Riepilogo delle ore</p>
+          <h1>Il tempo, a conti fatti.</h1>
+          <p>
+            Scegli i calendari. Segna il periodo.<br />Ritrova le ore, senza
+            fare i conti a mano.
+          </p>
+        </div>
+        <span class="hand">ogni ora al suo posto</span>
+      </div>
+      <div id="message" role="status" aria-live="polite"></div>
+      <div id="error" role="alert" hidden></div>
+      <section id="welcome" class="setup">
+        <div>
+          <p class="eyebrow">Il tuo punto di partenza</p>
+          <h2>Collega i tuoi calendari.</h2>
+          <p id="connectionNote">
+            I tuoi eventi vengono letti, mai modificati.
+          </p>
+          <div class="actions">
+            <button id="connect" class="primary">Collega Google</button
+            ><button id="demo">Esplora con dati di esempio</button>
+          </div>
+        </div>
+        <details id="configuration">
+          <summary>Configurazione Google, una sola volta</summary>
+          <div id="setupContent"></div>
+        </details>
+      </section>
+      <div class="workspace">
+        <aside>
+          <h2 class="sectionTitle">
+            Calendari <span id="calendarCount"></span>
+          </h2>
+          <label class="search"
+            >Cerca un calendario<input
+              type="search"
+              id="search"
+              placeholder="Nome del calendario"
+          /></label>
+          <div id="calendars">
+            <p class="muted">
+              Qui troverai i tuoi calendari dopo il collegamento.
+            </p>
+          </div>
+          <div class="asideActions">
+            <button id="all" disabled>Seleziona tutti</button
+            ><button id="refresh" disabled>Aggiorna elenco</button>
+          </div>
+          <p class="muted small">
+            La selezione viene ricordata su questo dispositivo.
+          </p>
+          <button id="disconnect" hidden>Scollega Google</button
+          ><button id="leaveDemo" hidden>Esci dalla demo</button>
+        </aside>
+        <div class="content">
+          <section class="period">
+            <h2 class="sectionTitle">Periodo da contare</h2>
+            <div id="presets" class="pills">
+              <button data-period="week">Questa settimana</button
+              ><button data-period="month">Questo mese</button
+              ><button data-period="lastmonth">Mese scorso</button
+              ><button data-period="year">Quest’anno</button
+              ><button data-period="custom">Personalizzato</button>
+            </div>
+            <form id="reportForm">
+              <div class="dates">
+                <label>Dal<input id="from" type="date" required /></label
+                ><label
+                  >Al, compreso<input id="to" type="date" required
+                /></label>
+              </div>
+              <div class="counting">
+                <label
+                  ><input id="merge" type="checkbox" checked /> Conta una sola
+                  volta le sovrapposizioni</label
+                >
+                <p class="small muted">
+                  Anche fra calendari diversi. Gli eventi di giornata intera e
+                  gli inviti rifiutati sono esclusi.
+                </p>
+                <p id="timezone" class="small muted"></p>
+              </div>
+              <button id="calculate" class="primary" disabled>
+                Conta le ore
+              </button>
+            </form>
+          </section>
+          <section id="results" aria-live="polite">
+            <div class="empty">
+              <span class="hand">il foglio è ancora bianco</span>
+              <h2>Le tue ore iniziano qui.</h2>
+              <p>
+                Seleziona almeno un calendario e un periodo,<br />poi premi
+                «Conta le ore».
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer>
+        <span>ChronoCal · Un po’ d’ordine nel tempo.</span
+        ><span id="modeLabel"></span>
+      </footer>
+    </main>
+  </body>
+</html>

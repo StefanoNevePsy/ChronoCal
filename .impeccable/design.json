@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T14:19:50.623080+00:00",
+  "title": "Design System: ChronoCal implementation record",
+  "extensions": {
+    "documentationSource": "DESIGN-IMPLEMENTATION.md",
+    "authority": "DESIGN.md (preserved user-supplied specification)",
+    "shadows": [],
+    "motion": [
+      {
+        "name": "button-background",
+        "value": "160ms cubic-bezier(.22,1,.36,1)",
+        "purpose": "Button background transition; reduced motion disables transitions."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "stacked",
+        "value": "800px"
+      },
+      {
+        "name": "compact",
+        "value": "420px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink-filled connection or count action.",
+      "html": "<button class=\"ds-button ds-primary\">Conta le ore</button>",
+      "css": ":host{color:var(--ink,#1a2131);font:15px/1.6 Archivo,sans-serif} .ds-button{min-height:44px;padding:9px 19px;border:1px solid var(--strong,rgba(26,33,49,.35));border-radius:999px;background:transparent;color:inherit;font:inherit;cursor:pointer;transition:background 160ms cubic-bezier(.22,1,.36,1)}.ds-button:hover{background:var(--field,#e8dfcd)}.ds-button:active{transform:translateY(1px)}.ds-primary{background:var(--ink,#1a2131);color:var(--paper,#f6f0e6);border-color:var(--ink,#1a2131)}.ds-primary:hover{background:color-mix(in srgb,var(--ink,#1a2131) 88%,var(--spot,#b23a23))}:focus-visible{outline:2px solid var(--spot,#b23a23);outline-offset:3px}"
+    },
+    {
+      "name": "Secondary action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Pencil-bordered secondary action.",
+      "html": "<button class=\"ds-button\">Aggiorna elenco</button>",
+      "css": ":host{color:var(--ink,#1a2131);font:15px/1.6 Archivo,sans-serif} .ds-button{min-height:44px;padding:9px 19px;border:1px solid var(--strong,rgba(26,33,49,.35));border-radius:999px;background:transparent;color:inherit;font:inherit;cursor:pointer;transition:background 160ms cubic-bezier(.22,1,.36,1)}.ds-button:hover{background:var(--field,#e8dfcd)}.ds-button:active{transform:translateY(1px)}:focus-visible{outline:2px solid var(--spot,#b23a23);outline-offset:3px}"
+    },
+    {
+      "name": "Date field",
+      "kind": "input",
+      "description": "Labeled native underlined date input.",
+      "html": "<label class=\"ds-label\">Dal<input class=\"ds-field\" type=\"date\" value=\"2026-10-01\"></label>",
+      "css": ":host{color:var(--ink,#1a2131);font:15px/1.6 Archivo,sans-serif} .ds-label{display:block;font-size:13px;color:var(--muted,#4f5563)}.ds-field{display:block;background:transparent;color:var(--ink,#1a2131);font:18px Archivo,sans-serif;border:0;border-bottom:1px solid var(--strong,rgba(26,33,49,.35));min-height:44px;padding:8px 0;width:100%;border-radius:0}:focus-visible{outline:2px solid var(--spot,#b23a23);outline-offset:3px}"
+    },
+    {
+      "name": "Period chips",
+      "kind": "chip",
+      "description": "Wrapped native toggle buttons with pressed state.",
+      "html": "<div class=\"ds-pills\"><button class=\"ds-button\" aria-pressed=\"true\">Questo mese</button><button class=\"ds-button\" aria-pressed=\"false\">Personalizzato</button></div>",
+      "css": ":host{color:var(--ink,#1a2131);font:15px/1.6 Archivo,sans-serif} .ds-button{min-height:44px;padding:9px 19px;border:1px solid var(--strong,rgba(26,33,49,.35));border-radius:999px;background:transparent;color:inherit;font:inherit;cursor:pointer;transition:background 160ms cubic-bezier(.22,1,.36,1)}.ds-button:hover{background:var(--field,#e8dfcd)}.ds-button:active{transform:translateY(1px)}.ds-pills{display:flex;flex-wrap:wrap;gap:8px}.ds-pills .ds-button{font-size:13px;padding:8px 15px}.ds-button[aria-pressed=true]{background:var(--ink,#1a2131);color:var(--paper,#f6f0e6);border-color:var(--ink,#1a2131)}:focus-visible{outline:2px solid var(--spot,#b23a23);outline-offset:3px}"
+    },
+    {
+      "name": "Calendar row",
+      "kind": "custom",
+      "description": "Ruled checkbox selection with printed calendar name.",
+      "html": "<label class=\"ds-calendar\"><input type=\"checkbox\" checked><span>Sedute cliniche</span></label>",
+      "css": ":host{color:var(--ink,#1a2131);font:15px/1.6 Archivo,sans-serif} .ds-calendar{display:flex;gap:12px;align-items:center;min-height:64px;border-bottom:1px solid var(--line,rgba(26,33,49,.18));padding:12px 0;cursor:pointer}.ds-calendar span{font:19px Gloock,serif}.ds-calendar input{width:20px;height:20px;margin:0;accent-color:var(--spot,#b23a23)}:focus-visible{outline:2px solid var(--spot,#b23a23);outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Un taccuino clinico ben tenuto",
+    "overview": "The Italian interface is a ruled working sheet: calendar selection, inclusive dates, and an hours report. Paper, ink, locally served serif and sans-serif fonts, and brief vermilion handwriting establish the notebook character.",
+    "keyCharacteristics": [
+      "Warm paper and blue-tinted ink, inverted in the dark theme.",
+      "Section headings extended by thin rules, calendar rows without cards, and printed numerical totals.",
+      "Brief handwritten annotations, never handwritten data."
+    ],
+    "rules": [],
+    "dos": [
+      "Do preserve the user-supplied DESIGN.md and use this record to locate implementation facts."
+    ],
+    "donts": [
+      "Don’t describe demo completion as verified Google account access."
+    ]
+  }
+}
