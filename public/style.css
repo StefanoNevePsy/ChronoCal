@@ -573,3 +573,11 @@ input::placeholder {
   color: var(--muted);
   opacity: 1;
 }
+.calendar .calendarAccount {
+  display: block;
+  font:
+    12px/1.6 Archivo,
+    sans-serif;
+  color: var(--muted);
+  margin-top: 4px;
+}

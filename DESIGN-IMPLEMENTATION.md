@@ -129,3 +129,6 @@ The supplied design authority prescribes a 60px header, headline line-height 1.0
 - **Don't** introduce filled metric cards, category-colored rows, decorative gradients, or heavy shadows.
 - **Don't** use handwriting for calendar names, dates, totals, or long instructions.
 - **Don't** describe demo completion as verified Google account access.
+
+## Mac calendar source, 2026-10-13
+Onboarding now promotes «Usa Calendario del Mac» with an adjacent «Aggiungi un account Google» action and a plain-language explanation of native permission. Direct OAuth configuration stays in a secondary disclosure. Calendar rows may show their account beneath the calendar name in muted Archivo, 12px. The connected sidebar offers source change and Internet Accounts access. Errors restore onboarding, and refreshing clears the prior report before new data is loaded. This is a scoped extension of the supplied Taccuino system.

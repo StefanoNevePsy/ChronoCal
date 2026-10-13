@@ -5,7 +5,10 @@ let calendars = [],
   demo = false,
   report = null,
   busy = false,
-  generation = 0;
+  generation = 0,
+  provider = "google",
+  configured = false,
+  macAvailable = false;
 const remembered = new Set(
   JSON.parse(localStorage.getItem("chrono.calendars") || "[]"),
 );
@@ -59,7 +62,11 @@ function controls() {
   $("#calculate").disabled = busy || !ids().length;
   $("#refresh").disabled = busy || !calendars.length;
   $("#all").disabled = busy || !calendars.length;
-  $("#connect").disabled = busy;
+  $("#connect").disabled = busy || !configured;
+  $("#connectMac").disabled = busy || !macAvailable;
+  $("#accounts").disabled = busy || !macAvailable;
+  $("#accountsAside").disabled = busy || !macAvailable;
+  $("#changeSource").disabled = busy;
 }
 function invalidate() {
   generation++;
@@ -97,7 +104,12 @@ function renderCalendars() {
       invalidate();
       controls();
     };
-    label.append(input, node("span", c.summary));
+    const name = node("span", c.summary);
+    if (c.account) {
+      const account = node("small", c.account, "calendarAccount");
+      name.append(account);
+    }
+    label.append(input, name);
     $("#calendars").append(label);
   }
   if (!$("#calendars").children.length)
@@ -177,6 +189,9 @@ $("#timezone").textContent =
   `Giornate nel fuso ${zone}. Le date iniziale e finale sono comprese.`;
 async function loadCalendars() {
   clear();
+  invalidate();
+  calendars = [];
+  renderCalendars();
   busy = true;
   controls();
   $("#message").textContent = "Lettura dei calendari…";
@@ -184,8 +199,22 @@ async function loadCalendars() {
     calendars = await api("/api/calendars");
     renderCalendars();
     $("#welcome").hidden = true;
-    $("#disconnect").hidden = false;
-    $("#message").textContent = "Calendari aggiornati. Puoi contare le ore.";
+    $("#disconnect").hidden = provider === "mac";
+    $("#changeSource").hidden = false;
+    $("#accountsAside").hidden = provider !== "mac";
+    $("#message").textContent =
+      provider === "mac"
+        ? "Calendari letti dal Mac. I dati seguono la sincronizzazione di Calendario di Apple."
+        : "Calendari aggiornati. Puoi contare le ore.";
+    if (!calendars.length && provider === "mac") {
+      $("#welcome").hidden = false;
+      $("#message").textContent =
+        "Nessun calendario disponibile. Aggiungi un account Google nelle impostazioni del Mac e abilita Calendari.";
+    }
+    $("#modeLabel").textContent =
+      provider === "mac"
+        ? "Calendario del Mac · Dati sincronizzati da Apple"
+        : "Google diretto · Sola lettura";
     invalidate();
   } catch (e) {
     error(e);
@@ -196,6 +225,43 @@ async function loadCalendars() {
   }
 }
 $("#refresh").onclick = () => (demo ? renderCalendars() : loadCalendars());
+$("#connectMac").onclick = async () => {
+  clear();
+  busy = true;
+  controls();
+  $("#message").textContent =
+    "Autorizza ChronoCal nella richiesta di macOS, se compare…";
+  try {
+    await api("/api/mac/connect", {});
+    provider = "mac";
+    demo = false;
+    $("#leaveDemo").hidden = true;
+    await loadCalendars();
+  } catch (e) {
+    error(e);
+  } finally {
+    busy = false;
+    controls();
+  }
+};
+async function accounts() {
+  clear();
+  try {
+    await api("/api/mac/accounts", {});
+    $("#message").textContent =
+      "Nelle impostazioni del Mac scegli Aggiungi account → Google e abilita Calendari. Poi torna qui e aggiorna l’elenco.";
+  } catch (e) {
+    error(e);
+  }
+}
+$("#accounts").onclick = $("#accountsAside").onclick = accounts;
+$("#changeSource").onclick = () => {
+  $("#welcome").hidden = false;
+  $("#welcome").scrollIntoView({ behavior: "instant" });
+};
+$("#configuration").addEventListener("toggle", () => {
+  $("#connect").hidden = !$("#configuration").open;
+});
 $("#connect").onclick = () => {
   location.href = "/auth/google";
 };
@@ -224,8 +290,13 @@ $("#credentials").onchange = async (e) => {
     if (file.size > 32000)
       throw Error("Il file è troppo grande. Usa il JSON del client OAuth.");
     await api("/api/config", JSON.parse(await file.text()));
+    configured = true;
+    provider = "google";
+    calendars = [];
+    renderCalendars();
+    invalidate();
     $("#connect").disabled = false;
-    $("#configuration").open = false;
+    $("#configuration").open = true;
     $("#message").textContent =
       "Configurazione salvata. Ora puoi collegare Google.";
   } catch (e) {
@@ -236,6 +307,9 @@ let demoPrevious;
 $("#demo").onclick = () => {
   demoPrevious = new Set(remembered);
   demo = true;
+  $("#disconnect").hidden = true;
+  $("#changeSource").hidden = true;
+  $("#accountsAside").hidden = true;
   calendars = [
     { id: "demo-clinica", summary: "Sedute cliniche" },
     { id: "demo-studio", summary: "Studio e formazione" },
@@ -496,10 +570,16 @@ function exportCSV() {
 async function init() {
   try {
     const s = await api("/api/status");
-    $("#connect").disabled = !s.configured;
-    $("#configuration").open = !s.configured;
+    configured = s.configured;
+    provider = s.provider;
+    macAvailable = s.macAvailable;
+    $("#connect").disabled = !configured;
+    $("#configuration").open = false;
+    $("#connectMac").disabled = !s.macAvailable;
+    $("#accounts").disabled = !s.macAvailable;
+    if (provider === "mac") await loadCalendars();
     $("#modeLabel").textContent = "Sul tuo Mac · Accesso di sola lettura";
-    if (s.connected) {
+    if (s.connected && provider !== "mac") {
       $("#connectionNote").textContent = s.offline
         ? "Collegamento Google con rinnovo automatico."
         : "Google collegato, ma senza rinnovo automatico. Ricollega per abilitarlo.";

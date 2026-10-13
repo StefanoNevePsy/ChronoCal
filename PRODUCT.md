@@ -16,3 +16,6 @@ User supplied DESIGN.md: follow the Taccuino design system. Italian interface.
 Empty target repository StefanoNevePsy/ChronoCal. No Google OAuth credentials provided. Demonstration data must be explicitly labeled.
 ## Open Decisions
 No verified Google account connection until credentials are supplied.
+
+## Update: Mac calendars
+Requested 2026-10-13: use Google accounts without Google Cloud configuration. Implement via native EventKit reading accounts already synchronized by Apple Calendar. User connects Google via macOS Internet Accounts once. Scope stays read-only in application code; macOS requires its full-access permission to read calendar events. No permission request during service startup. Explicit user click initiates authorization. Actual Calendar permission and synchronized-account reads need user validation.

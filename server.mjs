@@ -1,3 +1,8 @@
+import {
+  nativeCalendar,
+  nativeAvailable,
+  openCalendarAccounts,
+} from "./native-calendar.mjs";
 import http from "node:http";
 import { readFile, writeFile, mkdir, chmod } from "node:fs/promises";
 import { join, dirname } from "node:path";
@@ -168,7 +173,26 @@ http
           configured: !!saved.config,
           connected: !!saved.tokens,
           offline: !!saved.tokens?.refresh_token,
+          provider: saved.provider || "google",
+          macAvailable: await nativeAvailable(),
         });
+      if (url.pathname === "/api/mac/status")
+        return json(res, await nativeCalendar({ action: "status" }));
+      if (url.pathname === "/api/mac/connect" && req.method === "POST") {
+        await nativeCalendar({ action: "connect" });
+        saved.provider = "mac";
+        await persist();
+        return json(res, { ok: true });
+      }
+      if (url.pathname === "/api/mac/accounts" && req.method === "POST") {
+        await openCalendarAccounts();
+        return json(res, { ok: true });
+      }
+      if (url.pathname === "/api/mac/disconnect" && req.method === "POST") {
+        saved.provider = "google";
+        await persist();
+        return json(res, { ok: true });
+      }
       if (url.pathname === "/api/config" && req.method === "POST") {
         const b = await body(req),
           c = b.web;
@@ -181,6 +205,7 @@ http
             "Importa le credenziali di un client OAuth di tipo Applicazione web con il redirect indicato.",
           );
         saved = {
+          provider: "google",
           config: { client_id: c.client_id, client_secret: c.client_secret },
         };
         await persist();
@@ -225,6 +250,7 @@ http
           code_verifier: flow.verifier,
           redirect_uri: origin + "/oauth/callback",
         });
+        saved.provider = "google";
         saved.tokens = { ...t, expires: Date.now() + t.expires_in * 1000 };
         await persist();
         res.writeHead(302, { Location: "/" });
@@ -246,11 +272,17 @@ http
         await persist();
         return json(res, { ok: true });
       }
-      if (url.pathname === "/api/calendars")
+      if (url.pathname === "/api/calendars") {
+        if (saved.provider === "mac")
+          return json(
+            res,
+            (await nativeCalendar({ action: "calendars" })).calendars,
+          );
         return json(
           res,
           await pages("users/me/calendarList", { maxResults: 250 }),
         );
+      }
       if (url.pathname === "/api/report" && req.method === "POST") {
         const b = await body(req),
           from = Date.parse(b.from),
@@ -268,6 +300,25 @@ http
           throw Error(
             "Scegli da 1 a 30 calendari e un intervallo di massimo un anno.",
           );
+        if (saved.provider === "mac") {
+          const result = await nativeCalendar({
+            action: "events",
+            ids: [...new Set(b.ids)],
+            from,
+            to,
+          });
+          const all = [],
+            rows = [];
+          for (const c of result.calendars) {
+            const name = c.account ? `${c.summary} · ${c.account}` : c.summary;
+            const events = result.events
+              .filter((e) => e.calendarId === c.id)
+              .map((e) => ({ ...e, calendar: name }));
+            all.push(...events);
+            rows.push({ name, ...summarize(events, from, to, b.merge) });
+          }
+          return json(res, { ...summarize(all, from, to, b.merge), rows });
+        }
         const ids = [...new Set(b.ids)],
           calendars = await pages("users/me/calendarList", { maxResults: 250 });
         const rows = [],

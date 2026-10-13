@@ -38,15 +38,23 @@
           <p class="eyebrow">Il tuo punto di partenza</p>
           <h2>Collega i tuoi calendari.</h2>
           <p id="connectionNote">
-            I tuoi eventi vengono letti, mai modificati.
+            Senza Google Cloud: usa gli account Google sincronizzati con
+            Calendario di Apple. Il Mac ricorda l’accesso.
+          </p>
+          <p class="small muted">
+            Al primo uso, macOS chiede l’accesso ai calendari. ChronoCal legge
+            gli eventi per contare le ore, senza modificarli.
           </p>
           <div class="actions">
-            <button id="connect" class="primary">Collega Google</button
+            <button id="connectMac" class="primary">
+              Usa Calendario del Mac</button
+            ><button id="accounts">Aggiungi un account Google</button
+            ><button id="connect" hidden>Collega Google direttamente</button
             ><button id="demo">Esplora con dati di esempio</button>
           </div>
         </div>
         <details id="configuration">
-          <summary>Configurazione Google, una sola volta</summary>
+          <summary>Alternativa: collegamento diretto con Google Cloud</summary>
           <div id="setupContent"></div>
         </details>
       </section>
@@ -74,6 +82,8 @@
             La selezione viene ricordata su questo dispositivo.
           </p>
           <button id="disconnect" hidden>Scollega Google</button
+          ><button id="changeSource" hidden>Cambia collegamento</button
+          ><button id="accountsAside" hidden>Gestisci account del Mac</button
           ><button id="leaveDemo" hidden>Esci dalla demo</button>
         </aside>
         <div class="content">

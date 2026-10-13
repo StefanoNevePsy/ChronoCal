@@ -12,7 +12,16 @@ const source = dirname(dirname(fileURLToPath(import.meta.url))),
   label = "it.chronocal.local";
 if (process.platform !== "darwin") throw Error("Questo installer è per macOS.");
 await mkdir(runtime, { recursive: true });
-for (const name of ["server.mjs", "logic.mjs", "package.json", "public"])
+execFileSync(process.execPath, [join(source, "scripts/build-native.mjs")], {
+  stdio: "inherit",
+});
+for (const name of [
+  "server.mjs",
+  "logic.mjs",
+  "native-calendar.mjs",
+  "package.json",
+  "public",
+])
   await cp(join(source, name), join(runtime, name), { recursive: true });
 await mkdir(join(runtime, "bin"), { recursive: true });
 await cp(await realpath(process.execPath), join(runtime, "bin/node"));
